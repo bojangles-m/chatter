@@ -1,0 +1,23 @@
+.app {
+    display: grid;
+    height: 100%;
+    grid-template-columns: 1fr;
+    grid-template-rows: 26px 60px 1fr 50px;
+    grid-template-areas: 'hs' 'hr' 'ml' 'sm';
+}
+
+.header-sender {
+    grid-area: hs;
+}
+
+.header-receiver {
+    grid-area: hr;
+}
+
+.message-list {
+    grid-area: ml;
+}
+
+.send-message {
+    grid-area: sm;
+}

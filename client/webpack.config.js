@@ -19,15 +19,10 @@ const wpconfig = {
     module: {
         rules: [
             {
-                test: /\.(js|jsx)$/,
-                include: SRC_DIR,
+                test: /\.jsx?$/,
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env', '@babel/preset-react'],
-                        plugins: ['@babel/plugin-proposal-class-properties'],
-                    },
                 },
             },
             {

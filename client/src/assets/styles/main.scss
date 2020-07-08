@@ -1,0 +1,42 @@
+$color-white: #ffffff;
+$primary-font-color: #333333;
+$primary-background-color: $color-white;
+
+$background-color-sendmessage: $color-white;
+
+$primary-font-size: 14px;
+
+$primary-font-family: system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
+
+* {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.clearfix::after {
+    content: '';
+    clear: both;
+    display: table;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: $primary-background-color;
+    color: $primary-font-color;
+    font-size: $primary-font-size;
+}
+
+button,
+input {
+    outline: 0;
+    box-shadow: none;
+}
+
+@import 'grid';
+@import 'app';

@@ -1,6 +1,7 @@
 # dependencies
 **/node_modules
 
+**/coverage
 # production
 /client/build
 

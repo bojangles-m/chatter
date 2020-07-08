@@ -1,0 +1,215 @@
+.header-sender {
+    background-color: #e6e6e6;
+    height: 100%;
+    text-align: center;
+    line-height: 26px;
+}
+
+.header-receiver {
+    height: 100%;
+    border-bottom: 1px solid #e4e4e4;
+    background-color: $color-white;
+    padding-left: 40px;
+
+    svg {
+        fill: #4ad295;
+    }
+
+    .user {
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+        padding-top: 0;
+        margin: 13px;
+
+        .name {
+            font-weight: 700;
+
+            &::after {
+                width: 8px;
+                height: 8px;
+                border-radius: 50px;
+                background: #4ad295;
+                margin: 4px 0 0 7px;
+                position: absolute;
+                content: '';
+            }
+        }
+    }
+}
+
+.message-list {
+    overflow-y: scroll;
+    height: 100%;
+    position: relative;
+
+    .message {
+        position: relative;
+        margin: 8px;
+        background-color: #e6e6e6;
+        padding: 3px 6px;
+        border-radius: 7px;
+        background-color: #f3f3f3;
+
+        .info {
+            text-align: right;
+        }
+
+        .date {
+            font-size: 12px;
+            display: inline-block;
+            position: relative;
+            padding-right: 19px;
+
+            &.tick::before,
+            &.tick::after {
+                content: '';
+                position: absolute;
+                top: 3px;
+                right: 0;
+                width: 10px;
+                height: 4px;
+                border-bottom: 1px solid black;
+                border-left: 1px solid black;
+                transform: rotate(-55deg) translateY(-50%);
+            }
+
+            &.tick::before {
+                right: 5px;
+                top: 4px;
+            }
+        }
+
+        &.read .tick::before,
+        &.read .tick::after {
+            border-color: #0000ff;
+        }
+
+        &.received .tick::before,
+        &.received .tick::after {
+            border-color: #929292;
+        }
+
+        &.sent {
+            .tick::after {
+                display: none;
+            }
+            .tick::before {
+                right: 3px;
+            }
+        }
+
+        &.in {
+            float: left;
+            margin-right: 40px;
+
+            .tick::after,
+            .tick::before {
+                display: none;
+            }
+            .date {
+                padding-right: 0;
+            }
+        }
+
+        &.out {
+            float: right;
+            margin-left: 40px;
+        }
+    }
+
+    .message.out {
+        border-bottom-right-radius: 0;
+        border-bottom: 1px solid #d4d4d4;
+        border-right: 1px solid #e4e4e4;
+    }
+
+    .message.in {
+        border-top-left-radius: 0;
+        border-bottom: 1px solid #d4d4d4;
+        border-left: 1px solid #e4e4e4;
+    }
+
+    // Can be removed if ID message is removed
+    .message {
+        .id {
+            color: red;
+            font-weight: bold;
+            border: 1px solid red;
+            border-radius: 20px;
+            display: inline-block;
+            text-align: center;
+            padding: 4px 0 0 1px;
+            height: 30px;
+            width: 30px;
+            line-height: 21px;
+        }
+
+        &.in.received {
+            .id {
+                color: green;
+                border-color: green;
+            }
+        }
+    }
+}
+
+.send-message {
+    padding: 4px 10px;
+    border-top: 1px solid #e4e4e4;
+    background: $background-color-sendmessage;
+
+    .text {
+        width: 100%;
+        border: 0;
+        height: 40px;
+    }
+}
+
+.message-divider {
+    text-align: center;
+    margin: 10px 0;
+
+    span {
+        background: #717380;
+        display: inline-block;
+        border-radius: 20px;
+        padding: 2px 20px;
+        color: #dadada;
+    }
+}
+
+#to-bottom {
+    position: fixed;
+    right: 20px;
+    bottom: 70px;
+    opacity: 0.6;
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #0e2a47;
+
+    &.to-bottom-arrow::before,
+    &.to-bottom-arrow::after {
+        position: absolute;
+        top: 52%;
+        width: 16px;
+        height: 3px;
+        border-radius: 3px;
+        background: #4ad295;
+        content: '';
+    }
+
+    &.to-bottom-arrow::before {
+        transform: rotate(45deg) translateY(-50%);
+        left: 8px;
+    }
+    &.to-bottom-arrow::after {
+        transform: rotate(-45deg) translateY(-50%);
+        right: 8px;
+    }
+}

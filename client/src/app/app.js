@@ -1,125 +1,100 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { AddBook, BooksTable } from './appView';
-import Config from '../../config';
+import MessageList from '../component/MessageList';
+import SendMessage from '../component/SendMessage';
+import HeaderSender from '../component/view/HeaderSender';
+import HeaderReceiver from '../component/view/HeaderReceiver';
+import _Chatter from '../lib/chatter';
 
 class App extends Component {
     constructor(props) {
         super(props);
 
-        this.book = {
-            title: '',
-            author: '',
-        };
+        this.msgRef = React.createRef();
 
         this.state = {
-            books: [],
-
-            book: { ...this.book },
-
-            isNewBook: true,
-            bookId: 0,
-            index: -1,
+            messages: [],
+            numOfUnreadMessages: 0,
+            showGoToBottom: false,
+            jumpToBottom: 0,
+            jumpToBottomSent: 0,
         };
+
+        this.sendMessage = this.sendMessage.bind(this);
+        this.onFetchMessages = this.onFetchMessages.bind(this);
+        this.goToBottom = this.goToBottom.bind(this);
+        this.changeMessageStatus = this.changeMessageStatus.bind(this);
     }
 
-    componentDidMount = () => {
-        axios
-            .get(`${Config.SERVER_URI}/books`)
-            .then((res) => {
-                this.setState({ books: res.data.data });
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
+    componentDidMount() {
+        _Chatter.joinTheConversation({
+            init: (msgs, numOfUnreadMessages, isFarAway) => {
+                this.setState({
+                    messages: msgs,
+                    numOfUnreadMessages: numOfUnreadMessages,
+                    showGoToBottom: isFarAway,
+                });
+            },
 
-    clearForm = () => {
-        this.initState({ ...this.book }, true, 0, -1);
-    };
-
-    onChange = (e) => {
-        const { value, name } = e.target;
-        const book = this.state.book;
-        book[name] = value;
-        this.setState({ book: book });
-    };
-
-    onRemove = (id, i) => {
-        axios
-            .delete(`${Config.SERVER_URI}/books/${id}`)
-            .then((res) => {
-                const books = this.state.books;
-                books.splice(i, 1);
-                this.setState({ books: books });
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-
-    initState = (book, isNewBook, id, i) => {
-        this.setState({
-            book: book,
-            isNewBook: isNewBook,
-            bookId: id,
-            index: i,
+            onNewMessage: (msgs, numOfUnreadMessages, doJump) => {
+                this.setState({
+                    messages: msgs,
+                    numOfUnreadMessages: numOfUnreadMessages,
+                    jumpToBottom: !doJump ? this.state.jumpToBottom : this.state.jumpToBottom + 1,
+                });
+            },
         });
-    };
 
-    onEdit = (i) => {
-        const book = this.state.books[i];
-        this.initState({ ...book }, false, book._id, i);
-    };
+        _Chatter.init();
+    }
 
-    onSubmit = (e) => {
-        e.preventDefault();
-        this.state.isNewBook ? this.doSave() : this.doUpdate();
-    };
+    onFetchMessages(action) {
+        const msgs = action === 'bottom' ? _Chatter.fetch() : _Chatter.fetchTop();
+        this.setState({ messages: msgs });
+    }
 
-    doUpdate = () => {
-        axios
-            .patch(`${Config.SERVER_URI}/books/${this.state.bookId}`, this.state.book)
-            .then((res) => {
-                const books = this.state.books;
-                books[this.state.index] = res.data.data;
-                this.setState({ books: books });
-                this.clearForm();
-            })
-            .catch((err) => {
-                console.log(err);
+    sendMessage(text) {
+        _Chatter.sendMessage(text, (msgs) => {
+            this.setState({
+                messages: msgs,
+                jumpToBottomSent: this.state.jumpToBottomSent + 1,
+                showGoToBottom: false,
             });
+        });
+    }
+
+    goToBottom = () => {
+        const msgs = _Chatter.unreadMessages().count
+            ? _Chatter.fetchStartOfUnreadMessages()
+            : _Chatter.fetchTheEndOfMessages();
+
+        this.setState({ messages: msgs, jumpToBottom: this.state.jumpToBottom + 1 });
     };
 
-    doSave = () => {
-        axios
-            .post(`${Config.SERVER_URI}/books`, this.state.book)
-            .then((res) => {
-                const books = this.state.books;
-                books.unshift(res.data.data);
-                this.setState({ books: books });
-                this.initState({ ...this.book }, true, 0, -1);
-            })
-            .catch(function (err) {
-                console.log(err);
-            });
+    changeMessageStatus = (id, status) => {
+        _Chatter.updateMessage(id, { status: status });
+        this.setState({ numOfUnreadMessages: _Chatter.unreadMessages().count });
     };
 
     render() {
         return (
-            <div>
-                <AddBook
-                    book={this.state.book}
-                    onChange={this.onChange}
-                    onClear={this.clearForm}
-                    onSubmit={this.onSubmit}
+            <>
+                <HeaderSender name="User101" numOfUnreadMessages={this.state.numOfUnreadMessages} />
+                <HeaderReceiver name="User303" />
+
+                <MessageList
+                    ref={this.msgRef}
+                    messages={this.state.messages}
+                    onFetchMessages={this.onFetchMessages}
+                    isFarAway={() => _Chatter.isFarAway()}
+                    showGoToBottom={this.state.showGoToBottom}
+                    goToBottom={this.goToBottom}
+                    changeMessageStatus={this.changeMessageStatus}
+                    jumpToBottom={this.state.jumpToBottom}
+                    jumpToBottomSent={this.state.jumpToBottomSent}
                 />
 
-                <hr />
-
-                <h2>Availible Books</h2>
-                <BooksTable books={this.state.books} onRemove={this.onRemove} onEdit={this.onEdit} />
-            </div>
+                <SendMessage sendMessage={this.sendMessage} />
+            </>
         );
     }
 }
